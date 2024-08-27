@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.8.1'
+        // maven 'Maven 3.8.1'
     }
 
     environment {
@@ -26,7 +26,7 @@ pipeline {
 
         stage('Unit and Integration Tests') {
             steps {
-                sh 'mvn test'
+                sh './gradlew test'
             }
             post {
                 success {
@@ -42,7 +42,7 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
+                    sh './gradlew sonarqube'
                 }
             }
         }
