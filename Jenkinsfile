@@ -8,7 +8,7 @@ pipeline {
     environment {
         STAGING_SERVER = 'staging.example.com'
         PRODUCTION_SERVER = 'production.example.com'
-        EMAIL_RECIPIENTS = 'seharaejaz@.com' // Set your email recipients here
+        EMAIL_RECIPIENTS = 'seharaejaz@gmail.com' // Set your email recipients here
     }
 
     stages {
