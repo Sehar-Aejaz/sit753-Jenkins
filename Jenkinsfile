@@ -1,9 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // maven 'Maven 3.8.1'
-    }
 
     environment {
         STAGING_SERVER = 'staging.example.com'
