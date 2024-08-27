@@ -1,6 +1,9 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven 3.8.1'
+    }
 
     environment {
         STAGING_SERVER = 'staging.example.com'
@@ -17,13 +20,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh './gradlew build'
+                sh 'mvn clean package'
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                sh './gradlew test'
+                sh 'mvn test'
             }
             post {
                 success {
@@ -39,7 +42,7 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh './gradlew sonarqube'
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
