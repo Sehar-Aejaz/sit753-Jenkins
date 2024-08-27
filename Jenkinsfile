@@ -30,10 +30,14 @@ pipeline {
             }
             post {
                 success {
-                    sendEmail('Unit and Integration Tests', 'SUCCESS')
+                    script {
+                        sendEmail('Unit and Integration Tests', 'SUCCESS')
+                    }
                 }
                 failure {
-                    sendEmail('Unit and Integration Tests', 'FAILURE')
+                    script {
+                        sendEmail('Unit and Integration Tests', 'FAILURE')
+                    }
                     error 'Unit and Integration Tests failed'
                 }
             }
@@ -53,10 +57,14 @@ pipeline {
             }
             post {
                 success {
-                    sendEmail('Security Scan', 'SUCCESS')
+                    script {
+                        sendEmail('Security Scan', 'SUCCESS')
+                    }
                 }
                 failure {
-                    sendEmail('Security Scan', 'FAILURE')
+                    script {
+                        sendEmail('Security Scan', 'FAILURE')
+                    }
                     error 'Security Scan failed'
                 }
             }
@@ -115,3 +123,4 @@ def sendEmail(stageName, status) {
         mimeType: 'text/html'
     )
 }
+
