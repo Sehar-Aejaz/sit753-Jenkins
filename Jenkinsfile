@@ -33,6 +33,7 @@ pipeline {
             }
             post {
                 success {
+                    echo "Sending success email for Unit and Integration Tests..."
                     emailext(
                         subject: "Jenkins Pipeline - UNIT & INTEGRATION TESTS SUCCESS: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
                         body: """
@@ -47,6 +48,7 @@ pipeline {
                     )
                 }
                 failure {
+                    echo "Sending failure email for Unit and Integration Tests..."
                     emailext(
                         subject: "Jenkins Pipeline - UNIT & INTEGRATION TESTS FAILURE: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
                         body: """
@@ -77,6 +79,7 @@ pipeline {
             }
             post {
                 success {
+                    echo "Sending success email for Security Scan..."
                     emailext(
                         subject: "Jenkins Pipeline - SECURITY SCAN SUCCESS: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
                         body: """
@@ -91,6 +94,7 @@ pipeline {
                     )
                 }
                 failure {
+                    echo "Sending failure email for Security Scan..."
                     emailext(
                         subject: "Jenkins Pipeline - SECURITY SCAN FAILURE: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
                         body: """
@@ -137,4 +141,3 @@ pipeline {
         }
     }
 }
-
