@@ -28,19 +28,6 @@ pipeline {
             steps {
                 echo "sh 'mvn test'"
             }
-            post {
-                success {
-                    script {
-                        sendEmail('Unit and Integration Tests', 'SUCCESS')
-                    }
-                }
-                failure {
-                    script {
-                        sendEmail('Unit and Integration Tests', 'FAILURE')
-                    }
-                    echo "error 'Unit and Integration Tests failed'"
-                }
-            }
         }
 
         stage('Code Analysis') {
@@ -52,19 +39,6 @@ pipeline {
         stage('Security Scan') {
             steps {
                 echo "sh 'dependency-check --project my-project --scan ./target'"
-            }
-            post {
-                success {
-                    script {
-                        sendEmail('Security Scan', 'SUCCESS')
-                    }
-                }
-                failure {
-                    script {
-                        sendEmail('Security Scan', 'FAILURE')
-                    }
-                    echo "error 'Security Scan failed'"
-                }
             }
         }
 
@@ -96,31 +70,35 @@ pipeline {
     }
 
     post {
-        always {
-            echo "deleteDir()"
-        }
         success {
-            echo "Pipeline completed successfully!"
+            emailext(
+                subject: "Jenkins Pipeline - SUCCESS: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
+                body: """
+                    <p>The pipeline <b>${env.JOB_NAME}</b> completed successfully.</p>
+                    <p>Build Number: ${env.BUILD_NUMBER}</p>
+                    <p>Check the Jenkins console for more details.</p>
+                """,
+                to: "${env.EMAIL_RECIPIENTS}",
+                attachLog: true,
+                mimeType: 'text/html'
+            )
         }
         failure {
-            echo "Pipeline failed. Notifying team..."
+            emailext(
+                subject: "Jenkins Pipeline - FAILURE: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
+                body: """
+                    <p>The pipeline <b>${env.JOB_NAME}</b> has failed.</p>
+                    <p>Build Number: ${env.BUILD_NUMBER}</p>
+                    <p>Check the Jenkins console for more details.</p>
+                """,
+                to: "${env.EMAIL_RECIPIENTS}",
+                attachLog: true,
+                mimeType: 'text/html'
+            )
+        }
+        always {
+            echo "Cleaning up the workspace..."
+            deleteDir()
         }
     }
 }
-
-def sendEmail(stageName, status) {
-    emailext (
-        subject: "${stageName} - ${status}",
-        body: """
-            <p>The ${stageName} stage has completed with status: <b>${status}</b>.</p>
-            <p>Check the attached log for more details.</p>
-        """,
-        to: "${env.EMAIL_RECIPIENTS}",
-        attachLog: true,
-        mimeType: 'text/html'
-    )
-}
-
-
-
-
