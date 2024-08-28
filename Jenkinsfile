@@ -116,7 +116,7 @@ def sendEmail(stageName, status) {
             <p>Check the attached log for more details.</p>
         """,
         recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-        to: "${env.EMAIL_RECIPIENTS}",
+        to: "seharaejaz4@gmail.com",
         attachLog: true,
         mimeType: 'text/html'
     )
