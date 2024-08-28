@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/Sehar-Aejaz/sit753-Jenkins.git', branch: 'main'
+                echo "git url: 'https://github.com/Sehar-Aejaz/sit753-Jenkins.git', branch: 'main'"
             }
         }
 
@@ -104,9 +104,6 @@ pipeline {
         }
         failure {
             echo "Pipeline failed. Notifying team..."
-            script {
-                sendEmail('Pipeline Failure', 'FAILURE')
-            }
         }
     }
 }
@@ -118,11 +115,12 @@ def sendEmail(stageName, status) {
             <p>The ${stageName} stage has completed with status: <b>${status}</b>.</p>
             <p>Check the attached log for more details.</p>
         """,
-        to: "${EMAIL_RECIPIENTS}",
+        to: "${env.EMAIL_RECIPIENTS}",
         attachLog: true,
         mimeType: 'text/html'
     )
 }
+
 
 
 
