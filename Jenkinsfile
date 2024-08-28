@@ -14,91 +14,127 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo "git url: 'https://github.com/Sehar-Aejaz/sit753-Jenkins.git', branch: 'main'"
+                echo "Checking out the repository..."
+                // Add your actual git checkout steps here
             }
         }
 
         stage('Build') {
             steps {
-                echo "sh 'mvn clean package'"
+                echo "Building the project..."
+                // Add your actual build steps here (e.g., sh 'mvn clean package')
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                echo "sh 'mvn test'"
+                echo "Running unit and integration tests..."
+                // Add your actual test steps here (e.g., sh 'mvn test')
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Jenkins Pipeline - UNIT & INTEGRATION TESTS SUCCESS: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
+                        body: """
+                            <p>The Unit and Integration Tests stage of pipeline <b>${env.JOB_NAME}</b> completed successfully.</p>
+                            <p>Build Number: ${env.BUILD_NUMBER}</p>
+                            <p>Status: <b>SUCCESS</b></p>
+                            <p>Check the Jenkins console for more details.</p>
+                        """,
+                        to: "${env.EMAIL_RECIPIENTS}",
+                        attachLog: true,
+                        mimeType: 'text/html'
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Jenkins Pipeline - UNIT & INTEGRATION TESTS FAILURE: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
+                        body: """
+                            <p>The Unit and Integration Tests stage of pipeline <b>${env.JOB_NAME}</b> failed.</p>
+                            <p>Build Number: ${env.BUILD_NUMBER}</p>
+                            <p>Status: <b>FAILURE</b></p>
+                            <p>Check the Jenkins console for more details.</p>
+                        """,
+                        to: "${env.EMAIL_RECIPIENTS}",
+                        attachLog: true,
+                        mimeType: 'text/html'
+                    )
+                }
             }
         }
 
         stage('Code Analysis') {
             steps {
-                echo "withSonarQubeEnv('SonarQube') { sh 'mvn sonar:sonar' }"
+                echo "Running code analysis..."
+                // Add your actual code analysis steps here (e.g., withSonarQubeEnv('SonarQube') { sh 'mvn sonar:sonar' })
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo "sh 'dependency-check --project my-project --scan ./target'"
+                echo "Running security scan..."
+                // Add your actual security scan steps here (e.g., sh 'dependency-check --project my-project --scan ./target')
+            }
+            post {
+                success {
+                    emailext(
+                        subject: "Jenkins Pipeline - SECURITY SCAN SUCCESS: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
+                        body: """
+                            <p>The Security Scan stage of pipeline <b>${env.JOB_NAME}</b> completed successfully.</p>
+                            <p>Build Number: ${env.BUILD_NUMBER}</p>
+                            <p>Status: <b>SUCCESS</b></p>
+                            <p>Check the Jenkins console for more details.</p>
+                        """,
+                        to: "${env.EMAIL_RECIPIENTS}",
+                        attachLog: true,
+                        mimeType: 'text/html'
+                    )
+                }
+                failure {
+                    emailext(
+                        subject: "Jenkins Pipeline - SECURITY SCAN FAILURE: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
+                        body: """
+                            <p>The Security Scan stage of pipeline <b>${env.JOB_NAME}</b> failed.</p>
+                            <p>Build Number: ${env.BUILD_NUMBER}</p>
+                            <p>Status: <b>FAILURE</b></p>
+                            <p>Check the Jenkins console for more details.</p>
+                        """,
+                        to: "${env.EMAIL_RECIPIENTS}",
+                        attachLog: true,
+                        mimeType: 'text/html'
+                    )
+                }
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                echo '''
-                    scp target/myapp.jar user@$STAGING_SERVER:/path/to/deploy/
-                    ssh user@$STAGING_SERVER "java -jar /path/to/deploy/myapp.jar"
-                '''
+                echo "Deploying to staging server..."
+                // Add your actual deployment steps here
             }
         }
 
         stage('Integration Tests on Staging') {
             steps {
-                echo "sh 'selenium-side-runner -s mytests.side'"
-                echo "sh 'newman run myapi.postman_collection.json'"
+                echo "Running integration tests on staging..."
+                // Add your actual integration test steps here (e.g., sh 'selenium-side-runner -s mytests.side')
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                echo "input message: 'Deploy to production?', ok: 'Deploy'"
-                echo '''
-                    scp target/myapp.jar user@$PRODUCTION_SERVER:/path/to/deploy/
-                    ssh user@$PRODUCTION_SERVER "java -jar /path/to/deploy/myapp.jar"
-                '''
+                input message: 'Deploy to production?', ok: 'Deploy'
+                echo "Deploying to production server..."
+                // Add your actual production deployment steps here
             }
         }
     }
 
     post {
-        success {
-            emailext(
-                subject: "Jenkins Pipeline - SUCCESS: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
-                body: """
-                    <p>The pipeline <b>${env.JOB_NAME}</b> completed successfully.</p>
-                    <p>Build Number: ${env.BUILD_NUMBER}</p>
-                    <p>Check the Jenkins console for more details.</p>
-                """,
-                to: "${env.EMAIL_RECIPIENTS}",
-                attachLog: true,
-                mimeType: 'text/html'
-            )
-        }
-        failure {
-            emailext(
-                subject: "Jenkins Pipeline - FAILURE: ${env.JOB_NAME} (${env.BUILD_NUMBER})",
-                body: """
-                    <p>The pipeline <b>${env.JOB_NAME}</b> has failed.</p>
-                    <p>Build Number: ${env.BUILD_NUMBER}</p>
-                    <p>Check the Jenkins console for more details.</p>
-                """,
-                to: "${env.EMAIL_RECIPIENTS}",
-                attachLog: true,
-                mimeType: 'text/html'
-            )
-        }
         always {
             echo "Cleaning up the workspace..."
             deleteDir()
         }
     }
 }
+
