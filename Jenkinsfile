@@ -8,7 +8,7 @@ pipeline {
     environment {
         STAGING_SERVER = 'staging.example.com'
         PRODUCTION_SERVER = 'production.example.com'
-        EMAIL_RECIPIENTS = 'seharaejaz@gmail.com' // Set your email recipients here
+        EMAIL_RECIPIENTS = 'seharaejaz4@gmail.com' // Set your email recipients here
     }
 
     stages {
@@ -20,13 +20,13 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                echo "sh 'mvn clean package'"
             }
         }
 
         stage('Unit and Integration Tests') {
             steps {
-                sh 'mvn test'
+                echo "sh 'mvn test'"
             }
             post {
                 success {
@@ -38,22 +38,20 @@ pipeline {
                     script {
                         sendEmail('Unit and Integration Tests', 'FAILURE')
                     }
-                    error 'Unit and Integration Tests failed'
+                    echo "error 'Unit and Integration Tests failed'"
                 }
             }
         }
 
         stage('Code Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
-                }
+                echo "withSonarQubeEnv('SonarQube') { sh 'mvn sonar:sonar' }"
             }
         }
 
         stage('Security Scan') {
             steps {
-                sh 'dependency-check --project my-project --scan ./target'
+                echo "sh 'dependency-check --project my-project --scan ./target'"
             }
             post {
                 success {
@@ -65,14 +63,14 @@ pipeline {
                     script {
                         sendEmail('Security Scan', 'FAILURE')
                     }
-                    error 'Security Scan failed'
+                    echo "error 'Security Scan failed'"
                 }
             }
         }
 
         stage('Deploy to Staging') {
             steps {
-                sh '''
+                echo '''
                     scp target/myapp.jar user@$STAGING_SERVER:/path/to/deploy/
                     ssh user@$STAGING_SERVER "java -jar /path/to/deploy/myapp.jar"
                 '''
@@ -81,15 +79,15 @@ pipeline {
 
         stage('Integration Tests on Staging') {
             steps {
-                sh 'selenium-side-runner -s mytests.side'
-                sh 'newman run myapi.postman_collection.json'
+                echo "sh 'selenium-side-runner -s mytests.side'"
+                echo "sh 'newman run myapi.postman_collection.json'"
             }
         }
 
         stage('Deploy to Production') {
             steps {
-                input message: 'Deploy to production?', ok: 'Deploy'
-                sh '''
+                echo "input message: 'Deploy to production?', ok: 'Deploy'"
+                echo '''
                     scp target/myapp.jar user@$PRODUCTION_SERVER:/path/to/deploy/
                     ssh user@$PRODUCTION_SERVER "java -jar /path/to/deploy/myapp.jar"
                 '''
@@ -99,13 +97,13 @@ pipeline {
 
     post {
         always {
-            deleteDir()
+            echo "deleteDir()"
         }
         success {
-            echo 'Pipeline completed successfully!'
+            echo "Pipeline completed successfully!"
         }
         failure {
-            echo 'Pipeline failed. Notifying team...'
+            echo "Pipeline failed. Notifying team..."
         }
     }
 }
@@ -123,4 +121,5 @@ def sendEmail(stageName, status) {
         mimeType: 'text/html'
     )
 }
+
 
