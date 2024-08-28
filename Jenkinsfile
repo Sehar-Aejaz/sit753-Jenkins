@@ -104,6 +104,9 @@ pipeline {
         }
         failure {
             echo "Pipeline failed. Notifying team..."
+            script {
+                sendEmail('Pipeline Failure', 'FAILURE')
+            }
         }
     }
 }
@@ -115,11 +118,11 @@ def sendEmail(stageName, status) {
             <p>The ${stageName} stage has completed with status: <b>${status}</b>.</p>
             <p>Check the attached log for more details.</p>
         """,
-        recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-        to: "seharaejaz4@gmail.com",
+        to: "${EMAIL_RECIPIENTS}",
         attachLog: true,
         mimeType: 'text/html'
     )
 }
+
 
 
